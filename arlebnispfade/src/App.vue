@@ -1,24 +1,21 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
-    />
-    <title>Hello WebXR!</title>
+<template>
+  <div id="app">
+    <div id="bg-image"></div>
+    <div id="content">
+      <h1>ARlebnispfade</h1>
+      <button @click="activateXR">Start</button>
+    </div>
+  </div>
+</template>
 
-    <!-- three.js -->
-    <script src="https://unpkg.com/three@0.126.0/build/three.js"></script>
-    <script src="https://unpkg.com/three@0.126.0/examples/js/loaders/GLTFLoader.js"></script>
-  </head>
-  <body>
-    <!-- Starting an immersive WebXR session requires user interaction.
-    We start this one with a simple button. -->
-    <button onclick="activateXR()">Start Hello WebXR</button>
-    <script>
-      async function activateXR() {
-        // Add a canvas element and initialize a WebGL context that is compatible with WebXR.
+<script src="../node_modules/cesium/Source/Cesium.js"></script>
+<script src="webxr-geospatial.js"></script>
+<script>
+export default {
+  name: 'App',
+  methods: {
+    async activateXR(){
+       // Add a canvas element and initialize a WebGL context that is compatible with WebXR.
         const canvas = document.createElement("canvas");
         document.body.appendChild(canvas);
         const gl = canvas.getContext("webgl", { xrCompatible: true });
@@ -74,17 +71,15 @@
           }
         );
 
-        let flower;
-        loader.load(
-          "https://immersive-web.github.io/webxr-samples/media/gltf/sunflower/sunflower.gltf",
-          function (gltf) {
-            flower = gltf.scene;
-          }
-        );
+        let pin;
+        loader.load("/models/pin/pin.gltf", function (gltf) {
+          pin = gltf.scene;
+          pin.scale.set(10,10,10);
+        });
 
         session.addEventListener("select", (event) => {
-          if (flower) {
-            const clone = flower.clone();
+          if (pin) {
+            const clone = pin.clone();
             clone.position.copy(reticle.position);
             scene.add(clone);
           }
@@ -109,7 +104,16 @@
             const view = pose.views[0];
 
             const viewport = session.renderState.baseLayer.getViewport(view);
-            renderer.setSize(Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0), Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0));
+            renderer.setSize(
+              Math.max(
+                document.documentElement.clientWidth || 0,
+                window.innerWidth || 0
+              ),
+              Math.max(
+                document.documentElement.clientHeight || 0,
+                window.innerHeight || 0
+              )
+            );
 
             // Use the view's transform matrix and projection matrix to configure the THREE.camera.
             camera.matrix.fromArray(view.transform.matrix);
@@ -133,7 +137,61 @@
           }
         };
         session.requestAnimationFrame(onXRFrame);
-      }
-    </script>
-  </body>
-</html>
+    }
+  }
+}
+</script>
+
+<style>
+body {
+  margin: 0;
+}
+
+#bg-image {
+  background: linear-gradient(0deg,rgba(10,50,10, 1), rgba(10,100,10, 0.5)), url('@/assets/aggertalsperre.jpg');
+  filter: blur(8px);
+  -webkit-filter: blur(8px);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 100%;
+}
+
+#app {
+    background: rgba(10,50,10, 1);
+    height: 100vh;
+    margin: 0;
+}
+
+#app h1 {
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+}
+
+#content {
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    margin: auto;
+    position: absolute;
+    top: 25%;
+    left: 25%;
+}
+
+#content button {
+  appearance: button;
+  background-color: #1899D6;
+  border: none;
+  border-radius: 16px;
+  color: #FFFFFF;
+  font-family: din-round,sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 13px 16px;
+  text-align: center;
+  text-transform: uppercase;
+}
+</style>
