@@ -1,4 +1,4 @@
-Der erste Prototyp ist [hier](https://mi-classroom.github.io/mi-web-technologien-beiboot-ss2023-sebastianbroc/src/index.html) deployed!
+Der erste Prototyp ist [hier](https://mi-classroom.github.io/mi-web-technologien-beiboot-ss2023-sebastianbroc/) deployed!
 (Die App "XRViewer" ist benötigt, um die AR-Funktionalität zu testen)
 
 -----
