@@ -9,8 +9,9 @@
 </template>
 
 <script src="../node_modules/cesium/Source/Cesium.js"></script>
-<script src="webxr-geospatial.js"></script>
 <script>
+import * as cesium from "cesium"
+
 export default {
   name: 'App',
   methods: {
@@ -20,7 +21,7 @@ export default {
         document.body.appendChild(canvas);
         const gl = canvas.getContext("webgl", { xrCompatible: true });
 
-        const scene = new THREE.Scene();
+        let scene = new THREE.Scene();
 
         const directionalLight = new THREE.DirectionalLight(0xffffff, 0.3);
         directionalLight.position.set(10, 15, 10);
@@ -63,10 +64,9 @@ export default {
         const loader = new THREE.GLTFLoader();
         let reticle;
         loader.load(
-          "https://immersive-web.github.io/webxr-samples/media/gltf/reticle/reticle.gltf",
+          "/models/reticle/reticle.gltf",
           function (gltf) {
             reticle = gltf.scene;
-            reticle.visible = false;
             scene.add(reticle);
           }
         );
@@ -84,6 +84,32 @@ export default {
             scene.add(clone);
           }
         });
+
+        /*
+        // Initialize Geospatial positioning
+        let myGeoLoc = cartographic
+        alert(myGeoLoc)
+
+        */
+
+        
+        try{
+          XRGeospatialAnchor.getDeviceCartographic()
+          XRGeospatialAnchor.getDeviceElevation().then(altitude => {
+            let geoAlt = altitude
+            XRGeospatialAnchor.createGeoAnchor(new cesium.Cartographic(50.96562995732577,7.50190944425779, geoAlt)).then(object => {
+              const clone = pin.clone();
+              clone.position.copy(object.position);
+              scene.add(clone);
+            this.log(toString(object))
+        })
+          })
+        } catch(e){
+          this.log(e.message)
+        }
+      
+      
+        
 
         // Create a render loop that allows us to draw on the AR view.
         const onXRFrame = (time, frame) => {
@@ -137,6 +163,14 @@ export default {
           }
         };
         session.requestAnimationFrame(onXRFrame);
+    },
+    log(message){
+      const requestOptions = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({content: message})
+      };
+      fetch("http://192.168.2.140:3000/log", requestOptions)
     }
   }
 }
