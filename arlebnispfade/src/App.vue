@@ -1,9 +1,16 @@
 <template>
   <div id="app">
-    <div id="bg-image"></div>
-    <div id="content">
-      <h1>ARlebnispfade</h1>
-      <button @click="activateXR">Start</button>
+    <div id="startscreen">
+        <div id="bg-image"></div>
+        <div id="content">
+        <h1>ARlebnispfade</h1>
+        <button @click="activateXR">Start</button>
+        <button @click="testGeo">test Geo</button>
+      </div>  
+    </div>
+    <div id="overlay" style="display: none; z-index: 10;">
+      <h1>Debug-Info</h1>
+      <p>Position: {{ location }}</p>
     </div>
   </div>
 </template>
@@ -14,8 +21,30 @@ import * as cesium from "cesium"
 
 export default {
   name: 'App',
+  head: {
+    script: [
+      {
+        type: 'text/javascript', src:'webxr-geospatial.js', async: true, body: true
+      }
+    ]
+  },
+  data() {
+    return {
+      location: null
+    }
+  },
   methods: {
+    testGeo(){
+      navigator.geolocation.getCurrentPosition((result) => {
+          this.location = result.coords.latitude + " " + result.coords.longitude
+        })
+    },
     async activateXR(){
+      document.getElementById("startscreen").style.display = "none";
+      document.getElementById("overlay").style.display = "block";
+      document.getElementById("app").classList.add("running");
+      this.testGeo();
+
        // Add a canvas element and initialize a WebGL context that is compatible with WebXR.
         const canvas = document.createElement("canvas");
         document.body.appendChild(canvas);
@@ -45,6 +74,8 @@ export default {
         // Initialize a WebXR session using "immersive-ar".
         const session = await navigator.xr.requestSession("immersive-ar", {
           requiredFeatures: ["hit-test"],
+          optionalFeatures: ["dom-overlay"],
+          domOverlay: {root: document.body}
         });
         session.updateRenderState({
           baseLayer: new XRWebGLLayer(session, gl),
@@ -197,6 +228,10 @@ body {
     margin: 0;
 }
 
+#app.running {
+  background: none;
+}
+
 #app h1 {
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: white;
@@ -227,5 +262,15 @@ body {
   padding: 13px 16px;
   text-align: center;
   text-transform: uppercase;
+}
+
+#overlay {
+  background: rgba(0,0,0,0.1);
+  border-radius: 8px;
+  width: 70%;
+}
+
+#overlay h1 {
+  color: black;
 }
 </style>
