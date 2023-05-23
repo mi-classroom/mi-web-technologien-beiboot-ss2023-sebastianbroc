@@ -1,4 +1,4 @@
-# Framework to use for "ARlebnispfade"
+# Welches AR-Framework wird für "ARlebnispfade" genutzt?
 
 * Status: accepted
 * Workload: 1h
@@ -6,35 +6,35 @@
 * Issue: [1](https://github.com/mi-classroom/mi-master-wt-beiboot-2023/issues/1)
 * Date: 2023-04-19
 
-## Context and Problem Statement
+## Kontext und Problem
 
-In order to display the augmented reality objects as described in the issue, the project is in need of a web-framework which can be used for AR.
+Damit 3D-Objekte in einem Augmented-Reality Raum dargestellt werden können, braucht das Projekt ein grundlegendes Web-Framework, welches dies ermöglicht.
 
-## Considered Options
+## Betrachtete Optionen
 
 * [WebXR](https://immersiveweb.dev)
 * [AR.js](https://ar-js-org.github.io/AR.js-Docs/)
 * [8th Wall](https://www.8thwall.com)
 
-## Decision Outcome
+## Entscheidung
 
-Chosen option: "WebXR", because it is free, widely compatible, and standardized by the W3C (amongst others). "Big Players" like Google, Meta or Mozilla are working on the specification, providing a solid base for future-proofness.
+Gewählte Option: "WebXR", da es gratis, weitläufig kompatibel und durch die W3C (neben anderen) standardisiert ist. "Big Players" wie Google, Meta oder Mozilla arbeiten an der Spezifikation, was eine solide Basis für Zukunftssicherheit bietet.
 
-## Pros and Cons of the Options
+## Vor- und Nachteile der Optionen
 
 ### WebXR
 
-* Good, because it is free to use
-* Good, because there are a lot of people using WebXR for their projects. As a result of this, there are a lot of resources about this framework to be found on the web
-* Good - because it is a standardisation effort by the W3C and some of the largest tech companies, the future-proofness is safer than with the other options.
+* Gut, da die Nutzung gratis ist
+* Gut, da viele Leute dieses Framework für ihre Projekte nutzen. Daraus folgt, dass es eine große Menge an Ressourcen zu WebXR im Web gibt.
+* Gut - da es durch die W3C und einige der größten IT-Firmen als Standard entwickelt wird, ist die Zukunftssicherheit hiermit besser gegeben als bei den anderen Optionen.
 
 ### AR.js
 
-* Good, because it is free to use
-* Bad, because it is maintained by a handful of developers and does not have big organizations or corporations as a support.
+* Gut, da die Nutzung gratis ist
+* Schlecht, da es lediglich durch eine Handvoll von Entwicklern gepflegt wird und keine großen Firmen oder Organisationen hinter dem Projekt stehen. Dies ist schlecht für die Zukunftssicherheit.
 
 ### 8th Wall
 
-* Bad, because there a lot of costs connected with the usage.
-* Bad, because it uses its own web-editor, and learning to fluently use a new IDE always takes time.
-* Bad, because projects have to be published on 8th Wall's own website exclusively (with the smallest price-package).
+* Schlecht, da mit der Nutzung eine Vielzahl von anfallenden Kosten einher gehen.
+* Schlecht, da für die Entwicklung der 8th Wall-eigene WebEditor genutzt werden muss, und in einer neuen Entwicklungsumgebung "Fuß zu fassen" kann vermeidbaren Aufwand verursachen.
+* Schlecht, da Projekte exklusiv auf der 8th Wall-eigenen Webseite veröffentlicht werden müssen (wenn man lediglich für die kleinste Preisstufe bezahlt).
