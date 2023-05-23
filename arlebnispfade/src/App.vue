@@ -5,12 +5,21 @@
         <div id="content">
         <h1>ARlebnispfade</h1>
         <button @click="activateXR">Start</button>
-        <button @click="testGeo">test Geo</button>
+        <button @click="updatePosition">test Geo</button>
+        <button @click="checkForGeoMarkers">check nearby geomarkers</button>
+        <p>{{temp}}</p>
       </div>  
     </div>
     <div id="overlay" style="display: none; z-index: 10;">
-      <h1>Debug-Info</h1>
-      <p>Position: {{ location }}</p>
+      <div id="debug-info">
+        <h1>Debug-Info</h1>
+        <p>Position: {{ location }}</p>
+        <p>Nächster Marker: {{ nearestMarker }}</p>  
+        <p>Letzte Abfrage: {{ lastGeoUpdate }}</p>
+      </div>
+      <div id="add_marker" v-if="nearestMarker != null">
+        <h2>{{ nearestMarker.name }}</h2>
+      </div>
     </div>
   </div>
 </template>
@@ -18,6 +27,7 @@
 <script src="../node_modules/cesium/Source/Cesium.js"></script>
 <script>
 import * as cesium from "cesium"
+import moment from "moment"
 
 export default {
   name: 'App',
@@ -30,20 +40,58 @@ export default {
   },
   data() {
     return {
-      location: null
+      location: {
+        lat: null,
+        lon: null
+      },
+      geoMarkers: [
+        {
+          name: "Test-Marker",
+          lat: 50.96562570818945,
+          lon: 7.501961930146564
+        }
+      ],
+      lastGeoUpdate : null,
+      nearestMarker: null
     }
   },
+  mounted() {
+    window.setInterval(() => {
+    this.updatePosition()
+    this.checkForGeoMarkers()
+  }, 5000)
+  },
   methods: {
-    testGeo(){
+    updatePosition(){
       navigator.geolocation.getCurrentPosition((result) => {
-          this.location = result.coords.latitude + " " + result.coords.longitude
+          this.location.lat = result.coords.latitude
+          this.location.lon = result.coords.longitude
+          this.lastGeoUpdate = moment().format("m:s");
         })
+    },
+    checkForGeoMarkers(){
+      let noMarkersNearby = false
+      this.geoMarkers.forEach(geoMarker => {
+        let R = 6378.137; // Radius of earth in KM
+        let dLat = geoMarker.lat * Math.PI / 180 - this.location.lat * Math.PI / 180;
+        let dLon = geoMarker.lon * Math.PI / 180 - this.location.lon * Math.PI / 180;
+        let a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(this.location.lat * Math.PI / 180) * Math.cos(geoMarker.lat * Math.PI / 180) *
+        Math.sin(dLon/2) * Math.sin(dLon/2);
+        let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        let d = R * c;
+        this.nearestMarker = d * 1000
+        if((d * 1000) <= 5 ){ // if the user is near a geomarker by 5 meters
+          this.nearestMarker = geoMarker
+        }
+      })
+      if (noMarkersNearby) this.nearestMarker = null
     },
     async activateXR(){
       document.getElementById("startscreen").style.display = "none";
       document.getElementById("overlay").style.display = "block";
       document.getElementById("app").classList.add("running");
-      this.testGeo();
+      this.updatePosition();
 
        // Add a canvas element and initialize a WebGL context that is compatible with WebXR.
         const canvas = document.createElement("canvas");
@@ -264,13 +312,20 @@ body {
   text-transform: uppercase;
 }
 
-#overlay {
+#add_marker {
+  background: rgba(10,50,10, 0.5);
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+}
+
+#debug-info {
   background: rgba(0,0,0,0.1);
   border-radius: 8px;
   width: 70%;
 }
 
-#overlay h1 {
+#debug-info h1 {
   color: black;
 }
 </style>
