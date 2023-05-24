@@ -13,7 +13,8 @@ Um den Review-Buddy des Projekts [Finn Gedrath](https://github.com/finnge) in ne
 ## Entscheidung
 
 * Änderungen werden zukünftig nicht mehr direkt in den Main-Branch gepusht, sondern in eigene Branches
-* Für die neuen Branches werden bei Abschluss eines neuen Meilensteins / einer neuen Funktionalität Pull-Requests auf den main-Branch erstellt
+* Für die neuen Branches werden bei Abschluss eines neuen Feature-Paketes Pull-Requests auf den main-Branch erstellt
+* Die größe von Feature-Paketen sollte sinnvoll gewählt sein, damit diese nicht zu groß- oder kleinschrittig sind. Die [Anatomie eines perfekten Pull-Requests](https://hugooodias.medium.com/the-anatomy-of-a-perfect-pull-request-567382bb6067) kann hierfür als Orientierung dienen
 * Die Pull-Requests müssen vom Review-Buddy angenommen werden, damit diese gemerged werden können.
 * Kritik an Änderungen eines Pull-Request wird direkt innerhalb des Pull-Request vermerkt, damit alle Entscheidungen stets nachvollziehbar dokumentiert sind.
-* Bei Nicht-Annahme eines PR muss ein neuer PR nach Umsetzung der Kritik geöffnet werden
+* Bei Nicht-Annahme eines PR muss der PR entsprechend der Kritik angepasst werden, und ein neues Review angefordert werden
