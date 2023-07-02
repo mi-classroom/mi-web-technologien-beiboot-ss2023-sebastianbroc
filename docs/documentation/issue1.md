@@ -1,6 +1,6 @@
 # Dokumentation der Arbeitsphase zu Issue 1
 
-* Investierte Arbeitsstunden: ca. 11
+* Investierte Arbeitsstunden: ca. 15
 * Status: Teilweise Abgeschlossen
 
 ## Umgesetzte Funktionen:

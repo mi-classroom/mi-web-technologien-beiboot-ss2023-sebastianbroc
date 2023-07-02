@@ -1,6 +1,6 @@
 # Wie wird der Review-Buddy eingebunden?
 
-* Status: open
+* Status: done
 * Workload: 0.5h
 * Decider: [Sebastian Brock](https://github.com/sebastianbroc)
 * Issue: [2](https://github.com/mi-classroom/mi-master-wt-beiboot-2023/issues/2)
