@@ -28,10 +28,12 @@
 
 <script src="../node_modules/cesium/Source/Cesium.js"></script>
 <script src="../node_modules/eruda/eruda.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/resonance-audio/build/resonance-audio.min.js"></script>
 <script>
 import * as cesium from "cesium"
 import moment from "moment"
 import {Text} from 'troika-three-text'
+import {mat4, vec3} from 'gl-matrix'
 
 export default {
   name: 'App',
@@ -65,7 +67,8 @@ export default {
       nearestMarker: null,
       lastMarkerPosition: null,
       scene: null,
-      camera: null
+      camera: null,
+      audioContext: new AudioContext()
     }
   },
   mounted() {
@@ -119,6 +122,20 @@ export default {
             sunflower.visible = true
             //this.nearestMarker.isRendered = true
             this.scene.add(clone)
+
+
+            try{
+              this.setupAudio({
+                url: 'https://github.com/immersive-web/webxr-samples/raw/main/media/sound/guitar.ogg',
+                position: [0, 1.5, -1],
+                rotateY: 0
+              }).then((sources) => {
+                this.playAudio()
+              })
+            } catch(e){
+              this.log(e.message)
+              this.error = e.message
+            }
           });
         } catch(e){
           this.error = e.message
@@ -290,24 +307,121 @@ export default {
       };
       session.requestAnimationFrame(onXRFrame);
     },
-    requestPermission(permission) {
-      return new Promise((resolve, reject) => {
-        navigator.permissions.query({ name: permission }).then((result) => {
-          if (result.state === "granted") {
-            console.log(`Permission ${permission} already granted`);
-            resolve();
-          } else if (result.state === "prompt") {
-            console.log(`Permission ${permission} prompt`);
-            resolve();
-          } else if (result.state === "denied") {
-            console.log(`Permission ${permission} denied`);
-            reject();
-          }
-          result.addEventListener("change", () => {
-            report(result.state);
+    setupAudio(options){
+      let resonance = new ResonanceAudio(audioContext);
+      resonance.output.connect(this.audioContext.destination);
+
+      this.audioContext.suspend()
+
+      // Create a Resonance source and set its position in space.
+      let source = resonance.createSource();
+      let pos = options.position;
+      source.setPosition(pos[0], pos[1], pos[2]);
+
+      // Connect an analyser. This is only for visualization of the audio, and
+      // in most cases you won't want it.
+      let analyser = this.audioContext.createAnalyser();
+      analyser.fftSize = 1024;
+      analyser.lastRMSdB = 0;
+
+      return fetch(options.url)
+          .then((response) => response.arrayBuffer())
+          .then((buffer) => this.audioContext.decodeAudioData(buffer))
+          .then((decodedBuffer) => {
+            let bufferSource = createBufferSource(
+                source, decodedBuffer, analyser);
+
+            return {
+              buffer: decodedBuffer,
+              bufferSource: bufferSource,
+              source: source,
+              analyser: analyser,
+              position: pos,
+              rotateY: options.rotateY,
+              node: null
+            };
           });
-        });
+    },
+    createBufferSource(source, buffer, analyser) {
+      // Create a buffer source. This will need to be recreated every time
+      // we wish to start the audio, see
+      // https://developer.mozilla.org/en-US/docs/Web/API/AudioBufferSourceNode
+      let bufferSource = this.audioContext.createBufferSource();
+      bufferSource.loop = true;
+      bufferSource.connect(source.input);
+      bufferSource.connect(analyser);
+      bufferSource.buffer = buffer;
+      return bufferSource;
+    },
+    getLoudnessScale(analyser) {
+      let fftBuffer = new Float32Array(1024);
+      analyser.getFloatTimeDomainData(fftBuffer);
+      let sum = 0;
+      for (let i = 0; i < fftBuffer.length; ++i)
+        sum += fftBuffer[i] * fftBuffer[i];
+
+      // Calculate RMS and convert it to DB for perceptual loudness.
+      let rms = Math.sqrt(sum / fftBuffer.length);
+      let db = 30 + 10 / Math.LN10 * Math.log(rms <= 0 ? 0.0001 : rms);
+
+      // Moving average with the alpha of 0.525. Experimentally determined.
+      analyser.lastRMSdB += 0.525 * ((db < 0 ? 0 : db) - analyser.lastRMSdB);
+
+      // Scaling by 1/30 is also experimentally determined. Max is to present
+      // objects from disappearing entirely.
+      return Math.max(0.3, analyser.lastRMSdB / 30.0);
+    },
+    updateAudioNodes() {
+      this.scene.children.forEach(object => {
+        if(object.name == "geomarker"){
+          let source = object
+
+          if (!source.node) {
+            source.node = stereo.clone();
+            source.node.visible = true;
+            source.node.selectable = true;
+            this.scene.addNode(source.node);
+          }
+
+          let node = source.node;
+          let matrix = node.matrix;
+
+          // Move the node to the right location.
+          mat4.identity(matrix);
+          mat4.translate(matrix, matrix, source.position);
+          mat4.rotateY(matrix, matrix, source.rotateY);
+
+          // Scale it based on loudness of the audio channel
+          let scale = getLoudnessScale(source.analyser);
+          mat4.scale(matrix, matrix, [scale, scale, scale]);
+        }
       })
+    },
+    playAudio() {
+      if (this.audioContext.state === 'running')
+        return;
+
+      this.audioContext.resume();
+
+      this.scene.children.forEach(object => {
+        if (object.name === "geomarker") {
+          object.bufferSource.start(0);
+        }
+      })
+    },
+    pauseAudio() {
+      if (this.audioContext.state == 'suspended')
+        return;
+
+      this.scene.children.forEach(object => {
+        if (object.name === "geomarker") {
+          object.bufferSource.stop(0);
+          object.bufferSource = createBufferSource(
+              object.source, object.buffer, object.analyser);
+        }
+      })
+
+      this.audioContext.suspend();
     },
     log(message){
       const requestOptions = {
@@ -315,7 +429,7 @@ export default {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({content: message})
       };
-      fetch("http://192.168.2.140:3001/log", requestOptions)
+      fetch("http://192.168.2.152:3001/log", requestOptions)
     }
   }
 }
