@@ -1,29 +1,6 @@
 <template>
   <div id="app">
-    <div id="start" class="fullscreen_view">
-      <div class="title_text">
-        <h1><b>AR</b>lebnispfade</h1>
-        <h2>Oberbergischer Kreis</h2>
-      </div>
-      <video id="background-video" autoplay loop>
-        <source src="@/assets/intro-video.mp4" type="video/mp4">
-      </video>
-      <a href="#menu-1" class="continue_bottom">
-        <img src="@/assets/icons/arrow_back.svg">
-      </a>
-    </div>
-    <div id="menu-1" class="fullscreen_view">
-      <div class="buttons">
-        <router-link :to="'/browse'" class="button" style="background: black;">
-          <p>Ich will nur ein bisschen</p>
-          <p><b>stöbern</b></p>
-        </router-link>
-        <router-link class="button" style="background: #EB6A0A;">
-          <p>Ich will die ARlebnisse</p>
-          <p><b>nutzen</b></p>
-        </router-link>
-      </div>
-    </div>
+    <HeaderComp title="ARlebnispfad wählen" back-button-link="/"/>
   </div>
 </template>
 

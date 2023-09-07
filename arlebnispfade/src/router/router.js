@@ -4,6 +4,7 @@ import Vue from "vue";
 import Router from "vue-router";
 import Home from "../views/Home.vue";
 import ar from "../views/AR.vue";
+import Browse from "../views/Browse.vue";
 
 Vue.use(Router);
 
@@ -20,6 +21,11 @@ export default new Router({
       path: "/ar",
       name: "ar",
       component: ar
+    },
+    {
+      path: "/browse",
+      name: "browse",
+      component: Browse
     }
   ]
 });

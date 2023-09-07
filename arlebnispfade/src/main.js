@@ -2,6 +2,8 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router/router.js'
 import LoadScript from 'vue-plugin-load-script'
+import HeaderComp from "./components/HeaderComp";
+Vue.component('HeaderComp', HeaderComp);
 
 Vue.config.productionTip = false
 Vue.use(LoadScript);
