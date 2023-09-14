@@ -18,7 +18,7 @@
           <p>Ich will nur ein bisschen</p>
           <p><b>stöbern</b></p>
         </router-link>
-        <router-link :to="'/browse'" class="button" style="background: #EB6A0A;">
+        <router-link :to="'/start'" class="button" style="background: #EB6A0A;">
           <p>Ich will die ARlebnisse</p>
           <p><b>nutzen</b></p>
         </router-link>

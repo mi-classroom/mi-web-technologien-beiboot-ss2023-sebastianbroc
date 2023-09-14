@@ -15,7 +15,7 @@
       <div class="pfad browser" :class="{active: selectedPath}">
           <div class="arlebnis" v-for="arlebnis in selectedPath ? selectedPath.arlebnisse : []" :key="arlebnis.name">
             <h3>{{arlebnis.name}}</h3>
-            <h3>{{arlebnis.distance.toString().substring(0,4)}} km</h3>
+            <h3 style="white-space: nowrap;">{{arlebnis.distance.toString().substring(0,4)}} km</h3>
           </div>
         </div>
     </div>

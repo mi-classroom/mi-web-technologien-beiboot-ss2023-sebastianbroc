@@ -1,15 +1,6 @@
 <template>
   <div id="app">
-    <div id="startscreen">
-        <div id="bg-image"></div>
-        <div id="content">
-        <h1>ARlebnispfade</h1>
-        <button @click="activateXR">Start</button>
-        <button @click="updatePosition">test Geo</button>
-        <button @click="checkForGeoMarkers">check nearby geomarkers</button>
-        <p>{{temp}}</p>
-      </div>
-    </div>
+    <HeaderComp title="AR" back-button-link="/"/>
     <div id="overlay" style="display: none; z-index: 10;">
       <div id="debug-info">
         <h1>Debug-Info</h1>
@@ -28,6 +19,7 @@
 <script>
 import * as cesium from "cesium"
 import moment from "moment"
+import json from '../arlebnisse.json'
 
 export default {
   name: 'AR',
@@ -44,13 +36,7 @@ export default {
         lat: null,
         lon: null
       },
-      geoMarkers: [
-        {
-          name: "Test-Marker",
-          lat: 50.96562570818945,
-          lon: 7.501961930146564
-        }
-      ],
+      geoMarkers: json,
       lastGeoUpdate : null,
       nearestMarker: null
     }
@@ -60,6 +46,8 @@ export default {
     this.updatePosition()
     this.checkForGeoMarkers()
   }, 5000)
+
+    this.activateXR()
   },
   methods: {
     updatePosition(){
@@ -88,7 +76,12 @@ export default {
       if (noMarkersNearby) this.nearestMarker = null
     },
     async activateXR(){
-      document.getElementById("startscreen").style.display = "none";
+      let arlebnisse = []
+      this.geoMarkers.forEach(pfad => {
+        arlebnisse = arlebnisse.concat(pfad.arlebnisse)
+      })
+      this.geoMarkers = arlebnisse
+
       document.getElementById("overlay").style.display = "block";
       document.getElementById("app").classList.add("running");
       this.updatePosition();
