@@ -5,6 +5,7 @@
 <style>
 * {
   margin: 0;
+  font-family: "Open Sans", Verdana, Geneva, sans-serif;
 }
 
 :root {

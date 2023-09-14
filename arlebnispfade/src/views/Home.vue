@@ -18,7 +18,7 @@
           <p>Ich will nur ein bisschen</p>
           <p><b>stöbern</b></p>
         </router-link>
-        <router-link class="button" style="background: #EB6A0A;">
+        <router-link :to="'/browse'" class="button" style="background: #EB6A0A;">
           <p>Ich will die ARlebnisse</p>
           <p><b>nutzen</b></p>
         </router-link>
@@ -36,8 +36,39 @@ export default {
     }
   },
   mounted() {
+    this.playPauseVideo()
   },
   methods: {
+    playPauseVideo() {
+      let videos = document.querySelectorAll("video");
+      videos.forEach((video) => {
+        // We can only control playback without insteraction if video is mute
+        video.muted = true;
+        // Play is a promise so we need to check we have it
+        let playPromise = video.play();
+        if (playPromise !== undefined) {
+          playPromise.then(() => {
+            let observer = new IntersectionObserver(
+                (entries) => {
+                  entries.forEach((entry) => {
+                    if (
+                        entry.intersectionRatio !== 1 &&
+                        !video.paused
+                    ) {
+                      video.pause();
+                    } else if (video.paused) {
+                      video.play();
+                    }
+                  });
+                },
+                { threshold: 0.2 }
+            );
+            observer.observe(video);
+          });
+        }
+        video.muted = false;
+      });
+    }
 
   }
 }

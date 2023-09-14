@@ -31,6 +31,9 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .header-content {

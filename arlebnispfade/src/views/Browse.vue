@@ -1,15 +1,26 @@
 <template>
   <div id="app">
     <HeaderComp title="ARlebnispfad wählen" back-button-link="/"/>
+    <div class="browser">
+      <div v-for="pfad in json" :key="pfad.name" class="option">
+        <div class="gradient">
+          <img :src="pfad.image" class="background">
+        </div>
+        <h2>{{pfad.name}}</h2>
+        <img src="@/assets/icons/arrow_back.svg" class="arrow">
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import json from '../arlebnisse.json'
 
 export default {
   name: 'App',
   data() {
     return {
+      json: json
     }
   },
   mounted() {
@@ -30,81 +41,50 @@ export default {
   scroll-behavior: smooth;
 }
 
-.fullscreen_view {
-  height: 100%;
-  width: 100%;
-  scroll-snap-align: start;
+.browser {
+  display: flex;
+  flex-direction: column;
+}
+
+.option {
+  height: 200px;
   position: relative;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
 }
 
-.title_text {
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  font-family: "Open Sans", Verdana, Geneva, sans-serif;
-}
-
-.title_text h1 {
-  font-weight: 600;
-}
-
-.title_text h2 {
-  font-weight: 100;
-}
-
-.title_text b {
-  color: #EB6A0A;
-}
-
-#background-video {
-  margin-top: 2rem;
+.option .background {
+  position:relative;
+  z-index:-1;
+  display:block;
+  height: 200px;
   width: 100vw;
+  object-fit: cover;
 }
 
-.continue_bottom {
-  position: absolute;
-  bottom: 0;
-  height: 40vh;
-  width: 100vw;
-  background: linear-gradient(0deg, rgba(0,0,0,1) 60%, rgba(0,212,255,0) 100%);
-  display: flex;
-  justify-content: center;
-}
-
-.continue_bottom img {
-  margin-top: 150px;
-  filter: invert(100%);
-  transform: rotate(-90deg);
-  width: 50px;
-}
-
-#menu-1 {
-  background: linear-gradient(0deg,rgba(10,50,10, 1), rgba(10,100,10, 0.5)), url('@/assets/aggertalsperre.jpg');
-  background-size: cover;
-}
-
-#menu-1 .buttons {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 5rem;
-  height: 100%;
-  width: 100%;
-}
-
-#menu-1 .buttons .button {
-  width: 70%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.option h2 {
   color: white;
-  font-family: "Open Sans", Verdana, Geneva, sans-serif;
-  padding: 10px;
+  z-index: 2;
+  padding-bottom: 10px;
+  padding-left: 10px;
 }
 
-#menu-1 .buttons .button b {
-  font-size: 2rem;
+.gradient {
+  display:inline-block;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 0%,rgba(0,0,0,0.8) 100%); /* W3C */
+  width: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.arrow {
+  filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(285deg) brightness(106%) contrast(104%);
+  z-index: 2;
+  transform: rotate(180deg);
+  height: 30px;
+  padding: 10px 10px 10px 10px;
 }
 
 </style>
