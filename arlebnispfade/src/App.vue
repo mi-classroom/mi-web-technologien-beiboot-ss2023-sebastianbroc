@@ -13,5 +13,6 @@
   --background: rgb(255,255,255);
   --secondary-color: rgb(10,50,10);
   --warning: #aa5555;
+  --grey: #dedede;
 }
 </style>

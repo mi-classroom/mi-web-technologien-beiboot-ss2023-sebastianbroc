@@ -1,8 +1,9 @@
 <template>
     <div class="header" id="header">
       <div class="header-content">
-        <div v-if="BackButtonLink == null" style="width: 40px;"></div>
+        <div v-if="BackButtonLink == null && BackButtonMethod == null" style="width: 40px;"></div>
         <router-link class="back-button" v-if="BackButtonLink != null" :to="BackButtonLink"><img src="@/assets/icons/arrow_back.svg"></router-link>
+        <div class="back-button" v-if="BackButtonMethod != null" @click="$emit(BackButtonMethod)"><img src="@/assets/icons/arrow_back.svg"></div>
         <h1>{{title}}</h1>
         <div style="width: 40px;"></div>
       </div>
@@ -15,7 +16,8 @@ export default {
   },
   props: {
     title: String,
-    BackButtonLink: String
+    BackButtonLink: String,
+    BackButtonMethod: String
   },
   methods: {
   }

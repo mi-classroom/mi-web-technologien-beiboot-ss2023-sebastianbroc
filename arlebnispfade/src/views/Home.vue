@@ -84,6 +84,10 @@ export default {
   scroll-behavior: smooth;
 }
 
+a {
+  text-decoration: none;
+}
+
 .fullscreen_view {
   height: 100%;
   width: 100%;
