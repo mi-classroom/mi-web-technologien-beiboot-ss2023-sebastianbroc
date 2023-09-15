@@ -4,7 +4,7 @@
         <div v-if="BackButtonLink == null && BackButtonMethod == null" style="width: 40px;"></div>
         <router-link class="back-button" v-if="BackButtonLink != null" :to="BackButtonLink"><img src="@/assets/icons/arrow_back.svg"></router-link>
         <div class="back-button" v-if="BackButtonMethod != null" @click="$emit(BackButtonMethod)"><img src="@/assets/icons/arrow_back.svg"></div>
-        <h1>{{title}}</h1>
+        <h1 id="header_title">{{title}}</h1>
         <div style="width: 40px;"></div>
       </div>
     </div>
@@ -54,10 +54,10 @@ export default {
 
 h1 {
   font-size: 1.2rem;
-  color: #ffffff;
+  color: var(--header-title-color);
   margin: 0;
   align-self: center;
-  font-family: "Open Sans", Verdana, Geneva, sans-serif;
+  font-family: var(--font-family);
   font-weight: 300;
 }
 

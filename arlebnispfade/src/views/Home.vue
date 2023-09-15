@@ -99,7 +99,7 @@ a {
   position: absolute;
   top: 1rem;
   left: 1rem;
-  font-family: "Open Sans", Verdana, Geneva, sans-serif;
+  font-family: var(--font-family);
 }
 
 .title_text h1 {
@@ -157,7 +157,7 @@ a {
   flex-direction: column;
   align-items: center;
   color: white;
-  font-family: "Open Sans", Verdana, Geneva, sans-serif;
+  font-family: var(--font-family);
   padding: 10px;
 }
 
