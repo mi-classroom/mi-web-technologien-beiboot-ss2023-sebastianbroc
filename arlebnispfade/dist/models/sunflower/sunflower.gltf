@@ -137,7 +137,7 @@
         {
             "mimeType" : "image/png",
             "name" : "PUSHILIN_sunflower",
-            "uri" : "/models/sunflower/PUSHILIN_sunflower.png"
+            "uri" : "PUSHILIN_sunflower.png"
         }
     ],
     "accessors" : [
@@ -201,7 +201,7 @@
     "buffers" : [
         {
             "byteLength" : 23928,
-            "uri" : "/models/sunflower/sunflower.bin"
+            "uri" : "sunflower.bin"
         }
     ]
 }
