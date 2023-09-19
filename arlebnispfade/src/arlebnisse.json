@@ -94,7 +94,7 @@
           "name": "TEST",
           "lat": 50.94751155025605,
           "lon": 7.551116884907711,
-          "description": "Lorem Ipsum Dolor"
+          "description": "Dies ist ein reiner Test-Geopunkt, welcher am Standort gesetzt ist, an welchem ich diese Anwendung zurzeit entwickle."
       }
     ]
   },

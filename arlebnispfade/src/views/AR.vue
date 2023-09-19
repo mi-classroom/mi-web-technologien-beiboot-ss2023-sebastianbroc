@@ -11,8 +11,8 @@
         <p>{{camera ? camera.position : null}}</p>
       </div>
       <div id="add_marker" v-if="nearestMarker != null">
-        <h2>Marker in der Nähe!</h2>
-        <h3>{{ nearestMarker.name }}</h3>
+        <h2>{{ nearestMarker.name }}</h2>
+        <p>{{nearestMarker.description}}</p>
       </div>
     </div>
   </div>
@@ -54,7 +54,6 @@ export default {
       this.checkForGeoMarkers()
     }, 5000)
 
-    this.testGLTF()
     this.activateXR()
 
     document.getElementById("header_title").addEventListener("click", this.toggleDebug)
@@ -62,15 +61,6 @@ export default {
   methods: {
     toggleDebug(){
       this.showDebug = !this.showDebug
-    },
-    testGLTF(){
-      const loader = new THREE.GLTFLoader();
-      let sunflower;
-      loader.load(process.env.NODE_ENV === "production"
-          ? "./mi-web-technologien-beiboot-ss2023-sebastianbroc/models/sunflower/sunflower.gltf" : "./models/sunflower/sunflower.gltf", (gltf) => {
-        sunflower = gltf.scene;
-        console.log(sunflower)
-      })
     },
     updatePosition(){
       navigator.geolocation.getCurrentPosition((result) => {
@@ -101,7 +91,7 @@ export default {
     },
     renderGeoMarkers(){
       if(this.scene && this.nearestMarker !== null && this.nearestMarker.isRendered != true){
-        this.error = "geomarker wird jetzt gerendert"
+        console.log("geomarker wird jetzt gerendert")
         try {
           const loader = new THREE.GLTFLoader();
           let sunflower;
@@ -126,12 +116,11 @@ export default {
                 this.playAudio()
               })
             } catch(e){
-              this.log(e.message)
-              this.error = e.message
+              console.log(e.message)
             }
           });
         } catch(e){
-          this.error = e.message
+          console.log(e.message)
         }
       } else if (this.scene && this.nearestMarker === null) {
         this.scene.children.forEach(object => {
@@ -167,11 +156,11 @@ export default {
       document.body.appendChild(this.canvas);
       const gl = this.canvas.getContext("webgl", { xrCompatible: true });
 
-      let scene = new THREE.Scene();
+      this.scene = new THREE.Scene();
 
       const directionalLight = new THREE.DirectionalLight(0xffffff, 0.3);
       directionalLight.position.set(10, 15, 10);
-      scene.add(directionalLight);
+      this.scene.add(directionalLight);
 
       // Set up the WebGLRenderer, which handles rendering to the session's base layer.
       const renderer = new THREE.WebGLRenderer({
@@ -185,8 +174,8 @@ export default {
       // The API directly updates the camera matrices.
       // Disable matrix auto updates so three.js doesn't attempt
       // to handle the matrices independently.
-      const camera = new THREE.PerspectiveCamera();
-      camera.matrixAutoUpdate = false;
+      this.camera = new THREE.PerspectiveCamera();
+      this.camera.matrixAutoUpdate = false;
 
       // Initialize a WebXR session using "immersive-ar".
       this.session = await navigator.xr.requestSession("immersive-ar", {
@@ -214,9 +203,9 @@ export default {
       loader.load(
           process.env.NODE_ENV === "production"
               ? "./mi-web-technologien-beiboot-ss2023-sebastianbroc/models/reticle/reticle.gltf" : "./models/reticle/reticle.gltf",
-          function (gltf) {
+          (gltf) => {
             reticle = gltf.scene;
-            scene.add(reticle);
+            this.scene.add(reticle);
           }
       );
 
@@ -224,15 +213,28 @@ export default {
       loader.load(process.env.NODE_ENV === "production"
           ? "./mi-web-technologien-beiboot-ss2023-sebastianbroc/models/pin/pin.gltf" : "./models/pin/pin.gltf", function (gltf) {
         pin = gltf.scene;
-        pin.scale.set(10,10,10);
+        pin.scale.set(5,5,5);
       });
 
       this.session.addEventListener("select", (event) => {
         if (pin) {
           const clone = pin.clone();
           clone.position.copy(reticle.position);
-          scene.add(clone);
+          this.scene.add(clone);
         }
+
+        // lines between objects
+        if(this.lastMarkerPosition != null){
+          const material = new THREE.LineBasicMaterial({color: 0x0000ff});
+          const points = []
+          points.push(new THREE.Vector3(this.lastMarkerPosition.x, this.lastMarkerPosition.y, this.lastMarkerPosition.z))
+          points.push(new THREE.Vector3(reticle.position.x, reticle.position.y, reticle.position.z))
+          const geometry = new THREE.BufferGeometry().setFromPoints(points)
+          const line = new THREE.Line(geometry, material)
+          this.scene.add(line)
+        }
+
+        this.lastMarkerPosition = {x: reticle.position.x, y: reticle.position.y, z: reticle.position.z}
       });
 
 
@@ -267,9 +269,9 @@ export default {
           );
 
           // Use the view's transform matrix and projection matrix to configure the THREE.camera.
-          camera.matrix.fromArray(view.transform.matrix);
-          camera.projectionMatrix.fromArray(view.projectionMatrix);
-          camera.updateMatrixWorld(true);
+          this.camera.matrix.fromArray(view.transform.matrix);
+          this.camera.projectionMatrix.fromArray(view.projectionMatrix);
+          this.camera.updateMatrixWorld(true);
 
           const hitTestResults = frame.getHitTestResults(hitTestSource);
           if (hitTestResults.length > 0 && reticle) {
@@ -284,7 +286,7 @@ export default {
           }
 
           // Render the scene with THREE.WebGLRenderer.
-          renderer.render(scene, camera);
+          renderer.render(this.scene, this.camera);
         }
       };
       this.session.requestAnimationFrame(onXRFrame);
@@ -463,13 +465,19 @@ body {
   border-radius: 5px 5px 0 0 ;
   width: 100vw;
   position: absolute;
-  bottom: 100px;
+  bottom: 0;
+  padding-bottom: 10vh;
 }
 
-#add_marker h2, #add_marker h3 {
+#add_marker h2, #add_marker p {
   font-family: sans-serif;
   padding: 10px;
   margin: 0;
+}
+
+#add_marker h2 {
+  padding-bottom: 0;
+  color: var(--primary-color);
 }
 
 #debug-info {

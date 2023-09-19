@@ -5,7 +5,7 @@
         <h1><b>AR</b>lebnispfade</h1>
         <h2>Oberbergischer Kreis</h2>
       </div>
-      <video id="background-video" autoplay loop>
+      <video preload="true" id="background-video" autoplay loop webkit-playsinline playisline type="video/mp4">
         <source src="@/assets/intro-video.mp4" type="video/mp4">
       </video>
       <a href="#menu-1" class="continue_bottom">
