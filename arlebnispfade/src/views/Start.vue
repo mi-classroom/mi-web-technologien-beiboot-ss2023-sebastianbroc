@@ -17,7 +17,7 @@
         <div class="arlebnis" v-for="arlebnis in geoMarkers ? geoMarkers : []" :key="arlebnis.name">
           <div>
             <h3>{{ arlebnis.name }}</h3>
-            <h4>Pfad: {{arlebnis.pfad}}</h4>
+            <h4>{{arlebnis.pfad}}</h4>
           </div>
           <h3 style="white-space: nowrap;">{{ arlebnis.distance.toString().substring(0, 4) }} km</h3>
         </div>
@@ -110,7 +110,7 @@ export default {
   align-items: center;
   justify-content: center;
   gap: 50px;
-  height: 80vh;
+  height: 93vh;
 }
 
 .button {
